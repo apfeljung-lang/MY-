@@ -1,0 +1,5 @@
+{
+  "name": "증권 리워드 라운지",
+  "description": "사용자의 투자 행동에 따른 실시간 혜택과 미션을 제공하는 증권 리워드 라운지 서비스입니다.",
+  "requestFramePermissions": []
+}
