@@ -58,6 +58,7 @@ interface EventItem {
   tag: string;
   period: string;
   color: string;
+  status?: 'participating' | 'completed' | 'ended';
 }
 
 interface PointHistoryItem {
@@ -147,6 +148,44 @@ const EVENTS: EventItem[] = [
   },
 ];
 
+const MY_PARTICIPATING_EVENTS: EventItem[] = [
+  { 
+    id: 101, 
+    title: 'RIA 계좌개설 이벤트', 
+    tag: '참여중', 
+    period: '04.01 ~ 06.30',
+    color: 'text-blue-600 bg-blue-50',
+    status: 'participating'
+  },
+  { 
+    id: 103, 
+    title: '주식모아 이벤트', 
+    tag: '참여중', 
+    period: '상시',
+    color: 'text-green-600 bg-green-50',
+    status: 'participating'
+  },
+];
+
+const MY_PARTICIPATED_EVENTS: EventItem[] = [
+  { 
+    id: 201, 
+    title: '3월 해외주식 퀴즈 챌린지', 
+    tag: '종료', 
+    period: '03.01 ~ 03.31',
+    color: 'text-gray-500 bg-gray-100',
+    status: 'ended'
+  },
+  { 
+    id: 202, 
+    title: '웰컴 미션 완료 보너스', 
+    tag: '완료', 
+    period: '03.15 ~ 03.20',
+    color: 'text-purple-600 bg-purple-50',
+    status: 'completed'
+  },
+];
+
 const BENEFITS: Benefit[] = [
   {
     id: 1,
@@ -185,6 +224,13 @@ const ETF_BENEFITS: Benefit[] = [
     title: 'KODEX 대.반.전. (ETF9종)',
     reward: '대상종목 순매수 합산 금액별 추첨',
     icon: <PieChart className="w-5 h-5 text-green-500" />
+  },
+  {
+    id: 3,
+    category: 'D-1',
+    title: 'RISE 바이오TOP10액티브',
+    reward: '매영업일 3억이상 거래고객 5명 추첨',
+    icon: <TrendingUp className="w-5 h-5 text-red-500" />
   }
 ];
 
@@ -206,7 +252,7 @@ const COUPONS: CouponItem[] = [
 ];
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'history' | 'coupons' | 'status'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'history' | 'coupons' | 'status' | 'missions'>('home');
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-24 max-w-md mx-auto shadow-xl relative overflow-x-hidden">
@@ -220,12 +266,12 @@ export default function App() {
             transition={{ duration: 0.2 }}
           >
             {/* 1. Header Area */}
-            <header className="sticky top-0 z-50 bg-white px-5 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-6">
+            <header className="sticky top-0 z-50 bg-white px-4 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-4 sm:gap-6 flex-nowrap">
                 {['국내', '해외', '자산', 'MY'].map((tab) => (
                   <button
                     key={tab}
-                    className={`text-2xl font-black transition-all ${
+                    className={`text-xl sm:text-2xl font-black transition-all whitespace-nowrap ${
                       tab === 'MY' ? 'text-[#000000]' : 'text-gray-300'
                     }`}
                   >
@@ -233,7 +279,7 @@ export default function App() {
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                 <button className="p-1 hover:bg-gray-100 rounded-full transition-colors relative">
                   <Bell className="w-7 h-7 text-black stroke-[2.5]" />
                 </button>
@@ -245,17 +291,21 @@ export default function App() {
 
             {/* 1. Greeting Area */}
             <section className="px-5 pt-6 pb-4">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <p className="text-xl font-bold leading-tight flex items-center gap-2">
-                    안녕하세요, <span className="text-blue-600">송아리</span>님!
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded border border-blue-100 uppercase">최우수</span>
-                  </p>
-                  <p className="text-gray-500 text-sm mt-1">오늘도 혜택 가득한 투자를 응원합니다.</p>
+              <div className="flex justify-between items-center mb-2 gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-nowrap overflow-hidden">
+                    <p className="text-lg sm:text-xl font-bold leading-tight whitespace-nowrap truncate">
+                      안녕하세요, <span className="text-blue-600">송아리</span>님!
+                    </p>
+                    <span className="shrink-0 px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded border border-blue-100 uppercase whitespace-nowrap">
+                      최우수
+                    </span>
+                  </div>
+                  <p className="text-gray-500 text-[11px] sm:text-sm mt-1 whitespace-nowrap truncate">오늘도 혜택 가득한 투자를 응원합니다.</p>
                 </div>
                 <button 
                   onClick={() => setCurrentView('status')}
-                  className="px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-gray-600 flex items-center gap-1 hover:bg-gray-200 transition-colors"
+                  className="shrink-0 px-3 py-1.5 bg-gray-100 rounded-full text-[11px] sm:text-xs font-medium text-gray-600 flex items-center gap-1 hover:bg-gray-200 transition-colors whitespace-nowrap"
                 >
                   내 혜택 현황 <ChevronRight className="w-3 h-3" />
                 </button>
@@ -361,7 +411,12 @@ export default function App() {
             <section className="px-5 mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-[18px] font-bold">도전! 투자 미션</h3>
-                <button className="text-[12px] text-gray-400 flex items-center">전체보기 <ChevronRight className="w-3 h-3" /></button>
+                <button 
+                  onClick={() => setCurrentView('missions')}
+                  className="text-[12px] text-gray-400 flex items-center"
+                >
+                  전체보기 <ChevronRight className="w-3 h-3" />
+                </button>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {MISSIONS.map((mission) => (
@@ -579,6 +634,58 @@ export default function App() {
                 </div>
               </section>
 
+              {/* Participating Events */}
+              <section>
+                <h3 className="text-sm font-bold mb-4 flex items-center gap-2">
+                  참여 중인 이벤트 <span className="text-blue-600">{MY_PARTICIPATING_EVENTS.length}</span>
+                </h3>
+                <div className="space-y-3">
+                  {MY_PARTICIPATING_EVENTS.map((event) => (
+                    <div key={event.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                      <div className="bg-blue-50 p-2.5 rounded-xl">
+                        <Megaphone className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${event.color}`}>
+                            {event.tag}
+                          </span>
+                          <span className="text-[10px] text-gray-400">{event.period}</span>
+                        </div>
+                        <h4 className="text-sm font-bold truncate">{event.title}</h4>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-300" />
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Participated Events */}
+              <section>
+                <h3 className="text-sm font-bold mb-4 flex items-center gap-2">
+                  참여했던 이벤트 <span className="text-gray-400">{MY_PARTICIPATED_EVENTS.length}</span>
+                </h3>
+                <div className="space-y-3">
+                  {MY_PARTICIPATED_EVENTS.map((event) => (
+                    <div key={event.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 opacity-70">
+                      <div className="bg-gray-50 p-2.5 rounded-xl">
+                        <Megaphone className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${event.color}`}>
+                            {event.tag}
+                          </span>
+                          <span className="text-[10px] text-gray-400">{event.period}</span>
+                        </div>
+                        <h4 className="text-sm font-bold truncate">{event.title}</h4>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-300" />
+                    </div>
+                  ))}
+                </div>
+              </section>
+
               <button 
                 onClick={() => setCurrentView('home')}
                 className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm shadow-xl shadow-gray-200"
@@ -633,6 +740,57 @@ export default function App() {
                 ))}
               </div>
             </section>
+          </motion.div>
+        ) : currentView === 'missions' ? (
+          <motion.div
+            key="missions"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Missions Header */}
+            <header className="sticky top-0 z-50 bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+              <button 
+                onClick={() => setCurrentView('home')}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <h1 className="text-lg font-bold tracking-tight">도전! 투자 미션</h1>
+            </header>
+
+            <div className="p-5 space-y-6">
+              <div className="bg-blue-50 p-6 rounded-3xl mb-4">
+                <h2 className="text-blue-600 font-bold text-lg mb-1">미션 완료하고 혜택 받기</h2>
+                <p className="text-blue-400 text-xs">매일 새로운 미션이 업데이트 됩니다.</p>
+              </div>
+
+              <div className="space-y-4">
+                {MISSIONS.map((mission) => (
+                  <motion.button
+                    key={mission.id}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    className="w-full bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4 text-left"
+                  >
+                    <div className={`w-14 h-14 ${mission.color} rounded-2xl flex items-center justify-center shrink-0`}>
+                      {React.cloneElement(mission.icon as React.ReactElement, { className: 'w-7 h-7' })}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-base font-bold truncate">{mission.title}</h4>
+                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">진행중</span>
+                      </div>
+                      <p className="text-xs text-gray-400">{mission.subtitle}</p>
+                      <div className="mt-3 w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-blue-600 h-full w-1/3 rounded-full"></div>
+                      </div>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
           </motion.div>
         ) : (
           <motion.div
