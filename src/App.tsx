@@ -40,8 +40,10 @@ interface Mission {
   id: number;
   title: string;
   subtitle: string;
+  detailSubtitle?: string;
   icon: React.ReactNode;
   color: string;
+  url?: string;
 }
 
 interface Benefit {
@@ -104,9 +106,11 @@ const MISSIONS: Mission[] = [
   { 
     id: 4, 
     title: '구독형 캐시백', 
-    subtitle: '수수료 환급', 
+    subtitle: '구독료 면제', 
+    detailSubtitle: '매달 1천만원 이상 거래시 유독서비스 구독료 면제', 
     icon: <Coins className="w-6 h-6 text-yellow-500" />,
-    color: 'bg-yellow-50'
+    color: 'bg-yellow-50',
+    url: 'https://www.lguplus.com/pogg/main'
   },
   { 
     id: 5, 
@@ -424,6 +428,11 @@ export default function App() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     key={mission.id}
+                    onClick={() => {
+                      if (mission.url) {
+                        window.location.href = mission.url;
+                      }
+                    }}
                     className="flex flex-col items-center text-center p-4 bg-white rounded-2xl border border-gray-50 shadow-sm transition-all"
                   >
                     <div className={`w-12 h-12 ${mission.color} rounded-2xl flex items-center justify-center mb-3`}>
@@ -772,6 +781,11 @@ export default function App() {
                     key={mission.id}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
+                    onClick={() => {
+                      if (mission.url) {
+                        window.location.href = mission.url;
+                      }
+                    }}
                     className="w-full bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4 text-left"
                   >
                     <div className={`w-14 h-14 ${mission.color} rounded-2xl flex items-center justify-center shrink-0`}>
@@ -782,7 +796,7 @@ export default function App() {
                         <h4 className="text-base font-bold truncate">{mission.title}</h4>
                         <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">진행중</span>
                       </div>
-                      <p className="text-xs text-gray-400">{mission.subtitle}</p>
+                      <p className="text-xs text-gray-400">{mission.detailSubtitle || mission.subtitle}</p>
                       <div className="mt-3 w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
                         <div className="bg-blue-600 h-full w-1/3 rounded-full"></div>
                       </div>
